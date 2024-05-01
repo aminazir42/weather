@@ -2,9 +2,9 @@ import { Oval } from 'react-loader-spinner';
 import React, { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFrown } from '@fortawesome/free-solid-svg-icons';
+import { faFrown, faBars } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
- 
+
 function Weather() {
     const [input, setInput] = useState('');
     const [weather, setWeather] = useState({
@@ -12,7 +12,8 @@ function Weather() {
         data: {},
         error: false,
     });
- 
+    const [menuOpen, setMenuOpen] = useState(false);
+
     const toDateFunction = () => {
         const months = [
             'January',
@@ -38,18 +39,17 @@ function Weather() {
             'Saturday',
         ];
         const currentDate = new Date();
-        const date = `${WeekDays[currentDate.getDay()]} ${currentDate.getDate()} ${months[currentDate.getMonth()]
-            }`;
+        const date = `${WeekDays[currentDate.getDay()]} ${currentDate.getDate()} ${months[currentDate.getMonth()]}`;
         return date;
     };
- 
+
     const search = async (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();
             setInput('');
             setWeather({ ...weather, loading: true });
             const url = 'https://api.openweathermap.org/data/2.5/weather';
-            const api_key = 'f00c38e0279b7bc85480c3fe775d518c';
+            const api_key = 'e23baadac31cd2433d881b44def6bade';
             await axios
                 .get(url, {
                     params: {
@@ -69,12 +69,37 @@ function Weather() {
                 });
         }
     };
- 
+
+    const toggleMenu = () => {
+        setMenuOpen(!menuOpen);
+    };
+
+    const handleMenuItemClick = (menuItem) => {
+        // Perform actions based on the clicked menu item
+        console.log("Clicked on:", menuItem);
+        // Example: close the menu after clicking
+        setMenuOpen(false);
+    };
+
     return (
-        <div className="App">
-            <h1 className="app-name">
-                GeeksforGeeks Weather App
-            </h1>
+        <div className="App" style={{ backgroundImage: 'url("https://cdn.pixabay.com/photo/2020/05/06/06/18/blue-5136251_640.jpg")', backgroundSize: 'cover' }}>
+            <div className="menu-container">
+                <h1 className="app-name" onClick={toggleMenu}>
+                    Weather App
+                </h1>
+                <div className="menu-button" onClick={toggleMenu}>
+                    <FontAwesomeIcon icon={faBars} />
+                </div>
+                {menuOpen && (
+                    <div className="menu-options">
+                        <ul>
+                            <li onClick={() => handleMenuItemClick("Weather Hourly")}>Weather Hourly</li>
+                            <li onClick={() => handleMenuItemClick("Weather of the Day")}>Weather of the Day</li>
+                            <li onClick={() => handleMenuItemClick("Weather of the Week")}>Weather of the Week</li>
+                        </ul>
+                    </div>
+                )}
+            </div>
             <div className="search-bar">
                 <input
                     type="text"
@@ -131,5 +156,5 @@ function Weather() {
         </div>
     );
 }
- 
+
 export default Weather;
