@@ -62,9 +62,10 @@ function Weather() {
     };
 
     useEffect(() => {
-        // Fetch default weather data for Rawat, Pakistan when component mounts
-        fetchWeatherData('https://api.openweathermap.org/data/2.5/weather?q=Rawat,PK&units=metric');
-    }, []); // Empty dependency array to run only once on mount
+      // Fetch default weather data for Rawat, Pakistan when component mounts
+      fetchWeatherData('Rawat,PK');
+  }, [fetchWeatherData]);
+  
 
     const search = async (event) => {
         if (event.key === 'Enter') {
