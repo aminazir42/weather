@@ -74,13 +74,33 @@ function Weather() {
         setMenuOpen(!menuOpen);
     };
 
-    const handleMenuItemClick = (menuItem) => {
-        // Perform actions based on the clicked menu item
-        console.log("Clicked on:", menuItem);
-        // Example: close the menu after clicking
-        setMenuOpen(false);
-    };
-
+    const handleMenuItemClick = async (menuItem) => {
+      if (menuItem === "Hourly Forecast 4 days" && weather.data && weather.data.coord) {
+          // Fetch hourly forecast data for 4 days
+          const url = 'https://pro.openweathermap.org/data/2.5/forecast/hourly';
+          const api_key = 'e23baadac31cd2433d881b44def6bade'; // Replace 'YOUR_API_KEY' with your actual API key
+          try {
+              const { data } = await axios.get(url, {
+                  params: {
+                      lat: weather.data.coord.lat,
+                      lon: weather.data.coord.lon,
+                  },
+                  headers: {
+                      'Authorization': `Bearer ${api_key}`,
+                  },
+              });
+              console.log('Hourly Forecast:', data);
+              // You can now use the fetched data as needed
+          } catch (error) {
+              console.error('Error fetching hourly forecast data:', error);
+          }
+      }
+      // Perform actions based on the clicked menu item
+      console.log("Clicked on:", menuItem);
+      // Example: close the menu after clicking
+      setMenuOpen(false);
+  };
+  
     return (
         <div className="App" style={{ backgroundImage: 'url("https://cdn.pixabay.com/photo/2020/05/06/06/18/blue-5136251_640.jpg")', backgroundSize: 'cover' }}>
             <div className="menu-container">
@@ -93,9 +113,9 @@ function Weather() {
                 {menuOpen && (
                     <div className="menu-options">
                         <ul>
-                            <li onClick={() => handleMenuItemClick("Weather Hourly")}>Weather Hourly</li>
-                            <li onClick={() => handleMenuItemClick("Weather of the Day")}>Weather of the Day</li>
-                            <li onClick={() => handleMenuItemClick("Weather of the Week")}>Weather of the Week</li>
+                            <li onClick={() => handleMenuItemClick("Hourly Forecast 4 days")}>Hourly Forecast 4 days</li>
+                            <li onClick={() => handleMenuItemClick("Daily Forecast 16 days")}>Daily Forecast 16 days</li>
+                            <li onClick={() => handleMenuItemClick("Climatic Forecast 30 days")}>Climatic Forecast 30 days</li>
                         </ul>
                     </div>
                 )}
