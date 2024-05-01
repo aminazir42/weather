@@ -43,14 +43,13 @@ function Weather() {
         return date;
     };
 
-    const fetchWeatherData = async (city) => {
-        const url = 'https://api.openweathermap.org/data/2.5/weather';
+    const fetchWeatherData = async (url) => {
         const api_key = 'e23baadac31cd2433d881b44def6bade';
         try {
             const { data } = await axios.get(url, {
                 params: {
-                    q: city,
-                    units: 'metric',
+                    lat: weather.data.coord.lat,
+                    lon: weather.data.coord.lon,
                     appid: api_key,
                 },
             });
@@ -64,7 +63,7 @@ function Weather() {
 
     useEffect(() => {
         // Fetch default weather data for Rawat, Pakistan when component mounts
-        fetchWeatherData('Rawat,PK');
+        fetchWeatherData('https://api.openweathermap.org/data/2.5/weather?q=Rawat,PK&units=metric');
     }, []); // Empty dependency array to run only once on mount
 
     const search = async (event) => {
@@ -72,7 +71,7 @@ function Weather() {
             event.preventDefault();
             setInput('');
             setWeather({ ...weather, loading: true });
-            fetchWeatherData(input);
+            fetchWeatherData(`https://api.openweathermap.org/data/2.5/weather?q=${input}&units=metric`);
         }
     };
 
@@ -82,25 +81,18 @@ function Weather() {
 
     const handleMenuItemClick = async (menuItem) => {
         console.log("Clicked on:", menuItem);
+        let url = '';
         if (menuItem === "Hourly Forecast 4 days" && weather.data && weather.data.coord) {
-            console.log("Fetching hourly forecast data...");
-            const url = 'https://pro.openweathermap.org/data/2.5/forecast/hourly';
-            const api_key = 'e23baadac31cd2433d881b44def6bade'; // Replace 'YOUR_API_KEY' with your actual API key
-            try {
-                const { data } = await axios.get(url, {
-                    params: {
-                        lat: weather.data.coord.lat,
-                        lon: weather.data.coord.lon,
-                    },
-                    headers: {
-                        'Authorization': `Bearer ${api_key}`,
-                    },
-                });
-                console.log('Hourly Forecast:', data);
-                // Update state or perform other actions with the fetched data
-            } catch (error) {
-                console.error('Error fetching hourly forecast data:', error);
-            }
+            url = `https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${weather.data.coord.lat}&lon=${weather.data.coord.lon}`;
+        } else if (menuItem === "Daily Forecast 16 days" && weather.data && weather.data.coord) {
+            url = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${weather.data.coord.lat}&lon=${weather.data.coord.lon}&cnt=16`;
+        } else if (menuItem === "Climatic Forecast 30 days" && weather.data && weather.data.coord) {
+            url = `https://pro.openweathermap.org/data/2.5/forecast/climate?lat=${weather.data.coord.lat}&lon=${weather.data.coord.lon}`;
+        }
+        if (url) {
+            console.log("Fetching data from:", url);
+            setWeather({ ...weather, loading: true });
+            fetchWeatherData(url);
         }
         // Example: close the menu after clicking
         setMenuOpen(false);
