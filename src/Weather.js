@@ -5,7 +5,7 @@ import { faFrown, faBars } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 import WeatherDisplayPage from './WeatherDisplayPage';
 
-function App() {
+function Weather() {
     const [input, setInput] = useState('');
     const [weather, setWeather] = useState({
         loading: true,
@@ -122,4 +122,4 @@ function App() {
     );
 }
 
-export default App;
+export default Weather;
