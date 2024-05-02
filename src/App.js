@@ -13,6 +13,7 @@ function Weather() {
         error: false,
     });
     const [menuOpen, setMenuOpen] = useState(false);
+    const [forecastData, setForecastData] = useState(null);
 
     const toDateFunction = () => {
         const months = [
@@ -63,9 +64,8 @@ function Weather() {
     };
 
     useEffect(() => {
-        // Fetch default weather data for Rawat, Pakistan when component mounts
         fetchWeatherData('Rawat,PK');
-    }, []); // Empty dependency array to run only once on mount
+    }, []); 
 
     const search = async (event) => {
         if (event.key === 'Enter') {
@@ -81,30 +81,27 @@ function Weather() {
     };
 
     const handleMenuItemClick = async (menuItem) => {
-      console.log("Clicked on:", menuItem);
-      if (menuItem === "Hourly Forecast 4 days" && weather.data && weather.data.coord) {
-          console.log("Fetching hourly forecast data...");
-          const url = 'https://pro.openweathermap.org/data/2.5/forecast/hourly';
-          const api_key = 'e23baadac31cd2433d881b44def6bade'; // Replace 'YOUR_API_KEY' with your actual API key
-          try {
-              const { data } = await axios.get(url, {
-                  params: {
-                      lat: weather.data.coord.lat,
-                      lon: weather.data.coord.lon,
-                      appid: api_key,
-                  },
-              });
-              console.log('Hourly Forecast:', data);
-              // Update state to display the fetched data
-              // For now, let's just log the data to the console
-          } catch (error) {
-              console.error('Error fetching hourly forecast data:', error);
-          }
-      }
-      // Example: close the menu after clicking
-      setMenuOpen(false);
-  };
-  
+        console.log("Clicked on:", menuItem);
+        if (menuItem === "Hourly Forecast 4 days" && weather.data && weather.data.coord) {
+            console.log("Fetching hourly forecast data...");
+            const url = 'https://pro.openweathermap.org/data/2.5/forecast/hourly';
+            const api_key = 'e23baadac31cd2433d881b44def6bade'; 
+            try {
+                const { data } = await axios.get(url, {
+                    params: {
+                        lat: weather.data.coord.lat,
+                        lon: weather.data.coord.lon,
+                        appid: api_key,
+                    },
+                });
+                console.log('Hourly Forecast:', data);
+                setForecastData(data);
+            } catch (error) {
+                console.error('Error fetching hourly forecast data:', error);
+            }
+        }
+        setMenuOpen(false);
+    };
 
     return (
         <div className="App" style={{ backgroundImage: 'url("https://cdn.pixabay.com/photo/2020/05/06/06/18/blue-5136251_640.jpg")', backgroundSize: 'cover' }}>
@@ -117,7 +114,7 @@ function Weather() {
                 </div>
                 {menuOpen && (
                     <div className="menu-options">
-                        <ul>
+                        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
                             <li onClick={() => handleMenuItemClick("Hourly Forecast 4 days")}>Hourly Forecast 4 days</li>
                             <li onClick={() => handleMenuItemClick("Daily Forecast 16 days")}>Daily Forecast 16 days</li>
                             <li onClick={() => handleMenuItemClick("Climatic Forecast 30 days")}>Climatic Forecast 30 days</li>
@@ -125,7 +122,6 @@ function Weather() {
                     </div>
                 )}
             </div>
-            {/* Conditional rendering for other components */}
             {!menuOpen && (
                 <div>
                     <div className="search-bar">
@@ -156,7 +152,30 @@ function Weather() {
                             </span>
                         </>
                     )}
-                    {weather && weather.data && weather.data.main && (
+                    {forecastData && (
+                        <div className="forecast-container">
+                            {/* Render the hourly forecast data here */}
+                            {/* Sample rendering, you may adjust as needed */}
+                            <h2>Hourly Forecast</h2>
+                            {forecastData.list.map((hourlyData, index) => (
+                                <div key={index} className="hourly-data">
+                                    <p>Time: {new Date(hourlyData.dt * 1000).toLocaleTimeString()}</p>
+                                    <p>Temperature: {hourlyData.main.temp}°C</p>
+                                    <p>Feels Like: {hourlyData.main.feels_like}°C</p>
+                                    <p>Pressure: {hourlyData.main.pressure}hPa</p>
+                                    <p>Humidity: {hourlyData.main.humidity}%</p>
+                                    <p>Description: {hourlyData.weather[0].description}</p>
+                                    <img
+                                        src={`https://openweathermap.org/img/wn/${hourlyData.weather[0].icon}.png`}
+                                        alt={hourlyData.weather[0].description}
+                                    />
+                                    <p>Wind Speed: {hourlyData.wind.speed}m/s</p>
+                                    <p>Wind Direction: {hourlyData.wind.deg}°</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {weather && weather.data && weather.data.main && !forecastData && (
                         <div>
                             <div className="city-name">
                                 <h2>
