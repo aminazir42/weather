@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFrown, faBars } from '@fortawesome/free-solid-svg-icons';
+import { Oval } from 'react-loader-spinner'; // Import Oval component
 import './App.css';
 import WeatherDisplayPage from './WeatherDisplayPage';
 
@@ -33,6 +34,10 @@ function App() {
             setWeather({ data: {}, loading: false, error: true });
         }
     };
+
+    useEffect(() => {
+        fetchWeatherData('Rawat,PK');
+    }, []);
 
     const handleMenuItemClick = async (menuItem) => {
         console.log("Clicked on:", menuItem);
@@ -102,7 +107,7 @@ function App() {
                         <>
                             <br />
                             <br />
-                            <Oval type="Oval" color="black" height={100} width={100} />
+                            <Oval type="Oval" color="black" height={100} width={100} /> {/* Use Oval component here */}
                         </>
                     )}
                     {weather.error && (
